@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.util.List;
 import java.util.OptionalDouble;
+import java.util.stream.Collectors;
 
 @Entity // Reconoce o convirte a una entidad o tabla de la base de datos
 @Table(name = "series") // Almacenar varias series
@@ -20,7 +21,8 @@ public class Serie {
     private Categoria genero;
     private String actores;
     private String sinopsis;
-    @Transient // Indica que hay una relación con la lista de episodios pero que por ahora no se va a usar
+    // @Transient // Indica que hay una relación con la lista de episodios pero que por ahora no se va a usar
+    @OneToMany(mappedBy = "serie", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Episodio> episodios;
 
     public Serie(){} // Constructor predeterminado
@@ -44,7 +46,17 @@ public class Serie {
                 ", evaluacion=" + evaluacion +
                 ", poster='" + poster + '\'' +
                 ", actores='" + actores + '\'' +
-                ", sinopsis='" + sinopsis + '\'';
+                ", sinopsis='" + sinopsis + '\'' +
+                ", episodios='" + episodios + '\'';
+    }
+
+    public List<Episodio> getEpisodios() {
+        return episodios;
+    }
+
+    public void setEpisodios(List<Episodio> episodios) {
+        episodios.forEach(e -> e.setSerie(this));
+        this.episodios = episodios;
     }
 
     public Long getId() {
